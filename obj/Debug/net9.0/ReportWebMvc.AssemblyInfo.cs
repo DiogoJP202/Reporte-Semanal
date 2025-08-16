@@ -11,10 +11,11 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("0a97be98-a102-4ecf-bb65-e36c2d8b7097")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("ReportWebMvc")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+06c581786205cf5d06f3cfdf4524dfacd462d43b")]
 [assembly: System.Reflection.AssemblyProductAttribute("ReportWebMvc")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ReportWebMvc")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

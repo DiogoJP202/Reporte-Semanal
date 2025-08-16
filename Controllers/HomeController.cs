@@ -24,26 +24,25 @@ namespace ReportWebMvc.Controllers
             return View(viewModel);
         }
 
-        // ACTION POST: Executada quando o formulário é enviado
         [HttpPost]
         public async Task<IActionResult> Index(ReportDataViewModel reportData)
         {
-            // Remove notícias que não foram preenchidas pelo usuário
+            // A lógica de remover notícias vazias continua a mesma
             reportData.Noticias.RemoveAll(n =>
                 string.IsNullOrWhiteSpace(n.Titulo) &&
                 string.IsNullOrWhiteSpace(n.Texto));
 
             if (reportData.Noticias.Count == 0)
             {
-                ModelState.AddModelError(string.Empty, "Você deve preencher pelo menos uma notícia.");
-                return View(reportData); // Retorna para a View com a mensagem de erro
+                // Retorna um JSON indicando o erro
+                return Json(new { success = false, message = "Você deve preencher pelo menos uma notícia." });
             }
 
             // Chama o serviço para gerar o HTML
             string htmlCompleto = await _formatadorService.GerarHtmlCompletoAsync(reportData);
 
-            var bytes = System.Text.Encoding.UTF8.GetBytes(htmlCompleto);
-            return File(bytes, "text/html", "report.html");
+            // EM VEZ DE RETORNAR UM ARQUIVO, RETORNA UM JSON COM O CÓDIGO
+            return Json(new { success = true, htmlContent = htmlCompleto });
         }
     }
 }

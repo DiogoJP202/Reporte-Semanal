@@ -59,6 +59,27 @@
     </div>
 </form>
 
+<div class="modal fade" id="modal-codigo-html" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">Código HTML Gerado</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <pre><code id="codigo-html-gerado" class="language-html"></code></pre>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-primary" id="btn-copiar-codigo">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z" /><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z" /></svg>
+                    Copiar Código
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <template id="noticia-template">
     <div class="card mb-3 noticia-form">
         <div class="card-header d-flex justify-content-between align-items-center">
@@ -82,15 +103,17 @@
     </div>
 </template>
 
-
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // --- SEÇÃO 1: LÓGICA DE ADICIONAR/REMOVER NOTÍCIAS (COMPLETA) ---
             const addBtn = document.getElementById('add-noticia-btn');
-            const container = document.getElementById('container-noticias');
+            const noticiasContainer = document.getElementById('container-noticias');
+            const template = document.getElementById('noticia-template');
 
+            // Função para atualizar os índices dos campos (MUITO IMPORTANTE!)
             function updateIndices() {
-                const noticias = container.querySelectorAll('.noticia-form');
+                const noticias = noticiasContainer.querySelectorAll('.noticia-form');
                 noticias.forEach((noticia, index) => {
                     // Atualiza o texto do cabeçalho
                     const headerSpan = noticia.querySelector('.card-header span');
@@ -99,24 +122,22 @@
                     }
 
                     noticia.querySelectorAll('input, textarea').forEach(input => {
-                        input.name = input.name.replace(/\[\d+\]/, `[${index}]`);
+                        // Atualiza o atributo 'name' para o índice correto
+                        input.name = input.name.replace(/\[\d+\]|\[__INDEX__\]/, `[${index}]`);
                     });
                 });
             }
 
             // Adicionar uma nova notícia
             addBtn.addEventListener('click', function () {
-                const template = document.getElementById('noticia-template');
                 const clone = template.content.cloneNode(true);
-
-                // Pega o elemento card que foi clonado
                 const newCard = clone.querySelector('.noticia-form');
 
                 // Adiciona a classe de animação ANTES de adicionar ao DOM
                 newCard.classList.add('new-item');
 
-                container.appendChild(clone);
-                updateIndices();
+                noticiasContainer.appendChild(clone);
+                updateIndices(); // Atualiza os índices depois de adicionar
 
                 // Remove a classe de animação depois que ela termina para não reexecutar
                 setTimeout(() => {
@@ -124,22 +145,20 @@
                 }, 500); // 500ms é a duração da animação
             });
 
-            // Remover uma notícia
-            container.addEventListener('click', function (e) {
+            // Remover uma notícia (usando delegação de evento)
+            noticiasContainer.addEventListener('click', function (e) {
                 if (e.target && e.target.classList.contains('remove-noticia-btn')) {
                     e.preventDefault();
 
-                    const noticiasAtuais = container.querySelectorAll('.noticia-form');
+                    const noticiasAtuais = noticiasContainer.querySelectorAll('.noticia-form');
                     if (noticiasAtuais.length > 1) {
                         const cardToRemove = e.target.closest('.noticia-form');
 
-                        // Adiciona a classe de animação de saída
                         cardToRemove.classList.add('removing-item');
 
-                        // Espera a animação terminar ANTES de remover o elemento
                         cardToRemove.addEventListener('animationend', function() {
                             cardToRemove.remove();
-                            updateIndices(); // Atualiza os índices SÓ DEPOIS de remover
+                            updateIndices();
                         });
 
                     } else {
@@ -148,7 +167,60 @@
                 }
             });
 
+            // Garante que os índices estejam corretos no carregamento inicial
             updateIndices();
+
+            // --- SEÇÃO 2: LÓGICA PARA O MODAL E AJAX (COMPLETA) ---
+            const form = document.querySelector('form');
+            const modalElement = document.getElementById('modal-codigo-html');
+            const bootstrapModal = new bootstrap.Modal(modalElement);
+            const codeBlock = document.getElementById('codigo-html-gerado');
+            const copyButton = document.getElementById('btn-copiar-codigo');
+
+            // Intercepta o envio do formulário
+            form.addEventListener('submit', function(e) {
+                e.preventDefault(); // Impede o recarregamento da página
+
+                const submitButton = form.querySelector('button[type="submit"]');
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Gerando...';
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: new FormData(form) // Envia os dados do formulário
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        codeBlock.textContent = data.htmlContent;
+                        Prism.highlightElement(codeBlock);
+                        bootstrapModal.show();
+                    } else {
+                        alert('Erro: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao enviar o formulário:', error);
+                    alert('Ocorreu um erro inesperado. Tente novamente.');
+                })
+                .finally(() => {
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = 'Gerar HTML';
+                });
+            });
+
+            // Lógica do botão de copiar
+            copyButton.addEventListener('click', function() {
+                navigator.clipboard.writeText(codeBlock.textContent).then(() => {
+                    const originalText = copyButton.innerHTML;
+                    copyButton.innerHTML = 'Copiado!';
+                    setTimeout(() => {
+                        copyButton.innerHTML = originalText;
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Erro ao copiar:', err);
+                });
+            });
         });
     </script>
 }
