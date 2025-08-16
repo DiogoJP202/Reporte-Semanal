@@ -1,0 +1,14 @@
+# Arquivo .dockerignore
+
+# Ignora os diretórios de build e de depuração do .NET
+**/bin/
+**/obj/
+
+# Ignora arquivos de configuração de IDEs e do usuário
+.vs/
+.vscode/
+*.csproj.user
+
+# Ignora o diretório do Git
+.git/
+.gitignore
