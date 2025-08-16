@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "w1bpwWsAW/E=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\diogo\\Documents\\Estudos\\Projetos\\ReporteSemanalWeb\\ReportWebMvc\\ReportWebMvc.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\diogo\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}

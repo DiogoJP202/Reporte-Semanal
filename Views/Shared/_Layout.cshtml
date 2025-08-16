@@ -1,0 +1,169 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Seu App</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ReportWebMvc.styles.css" asp-append-version="true" />
+    <style>
+                /* --- Estilos Gerais e Layout --- */
+        :root {
+            --cor-primaria: #007bff; /* Azul Padrão Bootstrap */
+            --cor-sucesso: #28a745; /* Verde Sucesso */
+            --cor-perigo: #dc3545; /* Vermelho Perigo */
+            --cor-fundo: #f4f7f9;
+            --sombra-suave: 0 4px 15px rgba(0, 0, 0, 0.08);
+            --raio-borda: 8px;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--cor-fundo);
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px; /* Limita a largura para melhor leitura */
+        }
+
+        /* --- Estilos dos Formulários e Inputs --- */
+        .form-control, .btn {
+            border-radius: var(--raio-borda);
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--cor-primaria);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+        }
+
+        h4 {
+            margin-top: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        /* --- Card da Notícia e Animações --- */
+        .noticia-form {
+            border: 0;
+            box-shadow: var(--sombra-suave);
+            border-radius: var(--raio-borda);
+            border-left: 4px solid var(--cor-primaria);
+            overflow: hidden; /* Garante que o conteúdo não vaze das bordas arredondadas */
+        }
+
+        .card-header {
+            background-color: #fff;
+            font-weight: 500;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        /* Animação de entrada */
+        .noticia-form.new-item {
+            animation: slide-fade-in 0.5s ease-out forwards;
+        }
+
+        /* Animação de saída */
+        .noticia-form.removing-item {
+            animation: slide-fade-out 0.4s ease-in forwards;
+        }
+
+        /* --- Botões de Adicionar/Remover --- */
+        #add-noticia-btn, .remove-noticia-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%; /* Deixa os botões redondos */
+            font-size: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            box-shadow: var(--sombra-suave);
+        }
+
+        #add-noticia-btn:hover, .remove-noticia-btn:hover {
+            transform: scale(1.1);
+            filter: brightness(1.1);
+        }
+
+        .remove-noticia-btn {
+            width: 30px;
+            height: 30px;
+            font-size: 16px;
+        }
+
+        /* --- Keyframes para as Animações --- */
+
+        /* Animação para um novo item aparecer */
+        @@keyframes slide-fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Animação para um item desaparecer */
+        @@keyframes slide-fade-out {
+            from {
+                opacity: 1;
+                transform: scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: scale(0.9);
+                margin-bottom: -90px; /* Puxa os itens de baixo para cima suavemente */
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ReportWebMvc</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2025 - ReportWebMvc - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
